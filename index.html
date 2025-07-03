@@ -1,47 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Visor AR – Innovaryx</title>
+  <title>Innovaryx AR Viewer</title>
 
-  <!-- Model‑Viewer web component -->
+  <!-- Carga de Model Viewer -->
   <script type="module"
           src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
   <style>
-    /* --- Layout --- */
-    html, body { margin: 0; height: 100%; background-color: #000; }
-    model-viewer { width: 100vw; height: 100vh; }
+    body {
+      margin: 0;
+      background-color: #fff; /* Fondo blanco */
+      font-family: system-ui, sans-serif;
+    }
 
-    /* --- Bigger, clearer AR button --- */
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.85);
+      z-index: 2;
+      padding: 10px 0;
+    }
+
+    header img {
+      height: 40px;
+    }
+
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      z-index: 1;
+    }
+
+    /* Estilización del botón AR */
     model-viewer::part(ar-button) {
-      all: unset;              /* reset default */
-      display: flex; align-items: center; gap: 8px;
-      background: #fff; color: #000;
+      all: unset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #fff;
       font: 600 15px/1.2 system-ui, sans-serif;
       border-radius: 10px;
       padding: 14px 18px;
-      box-shadow: 0 3px 8px rgba(0,0,0,.35);
-      position: absolute;                             /* bottom‑right corner */
-      bottom: 24px; right: 24px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
       cursor: pointer;
-      transition: background .2s;
+      transition: background 0.2s;
     }
-    model-viewer::part(ar-button):hover  { background:#eee; }
-    model-viewer::part(ar-button-icon)   { width: 24px; height: 24px; }
+
+    model-viewer::part(ar-button):hover {
+      background-color: #333;
+    }
+
+    model-viewer::part(ar-button-icon) {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- ❗ Auto‑open AR on iOS (skips 3‑D viewer) -->
+  <!-- Auto-redirección a Quick Look en iOS -->
   <script>
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     if (isIOS) location.replace('3DModel.usdz');
   </script>
 
-  <!-- 3‑D / AR viewer (shown on Android & desktop) -->
+  <!-- Logo de Innovaryx -->
+  <header>
+    <img src="imagen_logo.png" alt="Innovaryx Logo">
+  </header>
+
+  <!-- Visor AR -->
   <model-viewer
     src="3DModel.glb"
     ios-src="3DModel.usdz"
@@ -51,7 +92,7 @@
     auto-rotate
     shadow-intensity="1"
     exposure="1"
-    alt="Modelo 3D en realidad aumentada">
+    alt="Modelo 3D Innovaryx">
   </model-viewer>
 
 </body>
