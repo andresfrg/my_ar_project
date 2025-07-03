@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Innovaryx AR Viewer</title>
 
-  <!-- Carga de Model Viewer -->
+  <!-- Model Viewer -->
   <script type="module"
           src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js">
   </script>
@@ -12,23 +12,21 @@
   <style>
     body {
       margin: 0;
-      background-color: #fff; /* Fondo blanco */
+      background-color: #fff;
       font-family: system-ui, sans-serif;
     }
 
+    /* Logo arriba a la izquierda */
     header {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      background-color: rgba(255, 255, 255, 0.85);
-      z-index: 2;
-      padding: 10px 0;
+      top: 12px;
+      left: 16px;
+      z-index: 10;
     }
 
     header img {
       height: 40px;
+      width: auto;
     }
 
     model-viewer {
@@ -38,7 +36,7 @@
       z-index: 1;
     }
 
-    /* Estilización del botón AR */
+    /* Botón AR más visible */
     model-viewer::part(ar-button) {
       all: unset;
       display: flex;
@@ -71,18 +69,18 @@
 
 <body>
 
-  <!-- Auto-redirección a Quick Look en iOS -->
+  <!-- iOS Quick Look Redirect -->
   <script>
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     if (isIOS) location.replace('3DModel.usdz');
   </script>
 
-  <!-- Logo de Innovaryx -->
+  <!-- Logo esquina superior izquierda -->
   <header>
     <img src="imagen_logo.png" alt="Innovaryx Logo">
   </header>
 
-  <!-- Visor AR -->
+  <!-- Modelo AR -->
   <model-viewer
     src="3DModel.glb"
     ios-src="3DModel.usdz"
