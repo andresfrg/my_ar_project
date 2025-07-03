@@ -4,84 +4,42 @@
   <meta charset="UTF-8" />
   <title>Innovaryx AR Viewer</title>
 
-  <!-- Model Viewer -->
+  <!-- Model‑Viewer -->
   <script type="module"
           src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
   <style>
-    body {
-      margin: 0;
-      background-color: #fff;
-      font-family: system-ui, sans-serif;
-    }
+    body { margin:0; background:#fff; font-family:system-ui,sans-serif; }
 
-    /* Logo arriba a la izquierda */
-    header {
-      position: absolute;
-      top: 12px;
-      left: 16px;
-      z-index: 10;
-    }
+    /* Logo esquina sup‑izq */
+    header { position:absolute; top:12px; left:16px; z-index:10; }
+    header img { height:40px; width:auto; }
 
-    header img {
-      height: 40px;
-      width: auto;
-    }
+    model-viewer { width:100vw; height:100vh; display:block; }
 
-    model-viewer {
-      width: 100vw;
-      height: 100vh;
-      display: block;
-      z-index: 1;
-    }
-
-    /* Botón AR más visible */
+    /* Botón AR grande (fallback) */
     model-viewer::part(ar-button) {
-      all: unset;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #000;
-      color: #fff;
-      font: 600 15px/1.2 system-ui, sans-serif;
-      border-radius: 10px;
-      padding: 14px 18px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
-      position: absolute;
-      bottom: 24px;
-      right: 24px;
-      cursor: pointer;
-      transition: background 0.2s;
+      all:unset; display:flex; align-items:center; justify-content:center;
+      background:#000; color:#fff; font:600 15px/1.2 system-ui,sans-serif;
+      border-radius:10px; padding:14px 18px;
+      box-shadow:0 3px 8px rgba(0,0,0,.35);
+      position:absolute; bottom:24px; right:24px;
+      cursor:pointer; transition:background .2s;
     }
-
-    model-viewer::part(ar-button):hover {
-      background-color: #333;
-    }
-
-    model-viewer::part(ar-button-icon) {
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-    }
+    model-viewer::part(ar-button):hover { background:#333; }
+    model-viewer::part(ar-button-icon){ width:24px; height:24px; margin-right:8px; }
   </style>
 </head>
 
 <body>
 
-  <!-- iOS Quick Look Redirect -->
-  <script>
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS) location.replace('3DModel.usdz');
-  </script>
+  <!-- Logo -->
+  <header><img src="imagen_logo.png" alt="Innovaryx"></header>
 
-  <!-- Logo esquina superior izquierda -->
-  <header>
-    <img src="imagen_logo.png" alt="Innovaryx Logo">
-  </header>
-
-  <!-- Modelo AR -->
+  <!-- Visor 3‑D / AR -->
   <model-viewer
+    id="mv"
     src="3DModel.glb"
     ios-src="3DModel.usdz"
     ar
@@ -92,6 +50,38 @@
     exposure="1"
     alt="Modelo 3D Innovaryx">
   </model-viewer>
+
+  <script>
+    const originUrl = window.location.origin;          // https://my-ar-project-five.vercel.app
+    const glbUrl    = `${originUrl}/3DModel.glb`;
+    const usdzUrl   = `${originUrl}/3DModel.usdz`;
+
+    const ua = navigator.userAgent;
+    const isIOS     = /iPad|iPhone|iPod/.test(ua);
+    const isAndroid = /Android/.test(ua) && /Chrome/.test(ua);
+
+    /* ---- Auto‑AR en iOS (Quick Look) ---- */
+    if (isIOS) {
+      window.location.replace(usdzUrl);
+    }
+
+    /* ---- Auto‑AR en Android (Scene Viewer) ---- */
+    if (isAndroid) {
+      const intentUrl =
+        `intent://arvr.google.com/scene-viewer/1.0` +
+        `?file=${encodeURIComponent(glbUrl)}` +
+        `&mode=ar_only` +
+        `&resizable=true` +
+        `#Intent;scheme=https;package=com.google.ar.core;` +
+        `action=android.intent.action.VIEW;` +
+        `S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+
+      // Pequeño retraso para permitir la carga del visor 3‑D si AR falla
+      setTimeout(() => { window.location.href = intentUrl; }, 500);
+    }
+
+    /* ---- Fallback: botón manual sigue funcionando ---- */
+  </script>
 
 </body>
 </html>
