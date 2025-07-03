@@ -4,42 +4,84 @@
   <meta charset="UTF-8" />
   <title>Innovaryx AR Viewer</title>
 
-  <!-- Model‑Viewer -->
+  <!-- Model Viewer -->
   <script type="module"
           src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
   <style>
-    body { margin:0; background:#fff; font-family:system-ui,sans-serif; }
-
-    /* Logo esquina sup‑izq */
-    header { position:absolute; top:12px; left:16px; z-index:10; }
-    header img { height:40px; width:auto; }
-
-    model-viewer { width:100vw; height:100vh; display:block; }
-
-    /* Botón AR grande (fallback) */
-    model-viewer::part(ar-button) {
-      all:unset; display:flex; align-items:center; justify-content:center;
-      background:#000; color:#fff; font:600 15px/1.2 system-ui,sans-serif;
-      border-radius:10px; padding:14px 18px;
-      box-shadow:0 3px 8px rgba(0,0,0,.35);
-      position:absolute; bottom:24px; right:24px;
-      cursor:pointer; transition:background .2s;
+    body {
+      margin: 0;
+      background: #fff;
+      font-family: system-ui, sans-serif;
     }
-    model-viewer::part(ar-button):hover { background:#333; }
-    model-viewer::part(ar-button-icon){ width:24px; height:24px; margin-right:8px; }
+
+    header {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      z-index: 10;
+    }
+
+    header img {
+      height: 40px;
+      width: auto;
+    }
+
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    /* Estilización del botón AR */
+    model-viewer::part(ar-button) {
+      all: unset;
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      padding: 16px 20px;
+      background: #000;
+      color: #fff;
+      border-radius: 12px;
+      font: 600 16px system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s ease;
+    }
+
+    model-viewer::part(ar-button):hover {
+      background: #333;
+    }
+
+    model-viewer::part(ar-button-icon) {
+      width: 24px;
+      height: 24px;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- Logo -->
-  <header><img src="imagen_logo.png" alt="Innovaryx"></header>
+  <!-- Redirección automática solo para iOS -->
+  <script>
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      window.location.replace('3DModel.usdz');
+    }
+  </script>
 
-  <!-- Visor 3‑D / AR -->
+  <!-- Logo de Innovaryx -->
+  <header>
+    <img src="imagen_logo.png" alt="Innovaryx Logo">
+  </header>
+
+  <!-- Visor 3D con AR -->
   <model-viewer
-    id="mv"
     src="3DModel.glb"
     ios-src="3DModel.usdz"
     ar
@@ -50,41 +92,6 @@
     exposure="1"
     alt="Modelo 3D Innovaryx">
   </model-viewer>
-
-  <script>
-  const originUrl = window.location.origin;       // https://my-ar-project-five.vercel.app
-  const glbUrl    = `${originUrl}/3DModel.glb`;
-  const usdzUrl   = `${originUrl}/3DModel.usdz`;
-
-  const ua        = navigator.userAgent;
-  const isIOS     = /iPad|iPhone|iPod/.test(ua);
-  const isAndroid = /Android/.test(ua) && /Chrome/.test(ua);
-
-  /* ---- Detectar si ya se intentó AR (noar=1) ---- */
-  const urlParams = new URLSearchParams(window.location.search);
-  const skipAR    = urlParams.has('noar');
-
-  /* ---- Auto‑Quick Look en iOS ---- */
-  if (isIOS && !skipAR) {
-    window.location.replace(usdzUrl);
-  }
-
-  /* ---- Auto‑Scene Viewer en Android ---- */
-  if (isAndroid && !skipAR) {
-    const fallback = `${window.location.origin}${window.location.pathname}?noar=1`;
-    const intent   =
-      `intent://arvr.google.com/scene-viewer/1.0` +
-      `?file=${encodeURIComponent(glbUrl)}` +
-      `&mode=ar_only` +
-      `&resizable=true` +
-      `#Intent;scheme=https;package=com.google.ar.core;` +
-      `action=android.intent.action.VIEW;` +
-      `S.browser_fallback_url=${encodeURIComponent(fallback)};end;`;
-
-    setTimeout(() => { window.location.href = intent; }, 500);
-  }
-</script>
-
 
 </body>
 </html>
