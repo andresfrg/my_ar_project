@@ -10,15 +10,33 @@
     </script>
 
     <style>
-      body {
-        margin: 0;
-        background-color: #000;
-      }
-      model-viewer {
-        width: 100vw;
-        height: 100vh;
-      }
-    </style>
+  body {
+    margin: 0;
+    background-color: #000;
+  }
+
+  model-viewer {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Agrandar el botón del cubo AR */
+  model-viewer::part(ar-button) {
+    background-color: #fff;
+    color: #000;
+    border-radius: 8px;
+    font-size: 1.1em;
+    padding: 12px 16px;
+    bottom: 24px;
+    right: 24px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  model-viewer::part(ar-button):hover {
+    background-color: #eee;
+  }
+</style>
+
   </head>
   <body>
 
