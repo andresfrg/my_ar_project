@@ -52,36 +52,39 @@
   </model-viewer>
 
   <script>
-    const originUrl = window.location.origin;          // https://my-ar-project-five.vercel.app
-    const glbUrl    = `${originUrl}/3DModel.glb`;
-    const usdzUrl   = `${originUrl}/3DModel.usdz`;
+  const originUrl = window.location.origin;       // https://my-ar-project-five.vercel.app
+  const glbUrl    = `${originUrl}/3DModel.glb`;
+  const usdzUrl   = `${originUrl}/3DModel.usdz`;
 
-    const ua = navigator.userAgent;
-    const isIOS     = /iPad|iPhone|iPod/.test(ua);
-    const isAndroid = /Android/.test(ua) && /Chrome/.test(ua);
+  const ua        = navigator.userAgent;
+  const isIOS     = /iPad|iPhone|iPod/.test(ua);
+  const isAndroid = /Android/.test(ua) && /Chrome/.test(ua);
 
-    /* ---- Auto‑AR en iOS (Quick Look) ---- */
-    if (isIOS) {
-      window.location.replace(usdzUrl);
-    }
+  /* ---- Detectar si ya se intentó AR (noar=1) ---- */
+  const urlParams = new URLSearchParams(window.location.search);
+  const skipAR    = urlParams.has('noar');
 
-    /* ---- Auto‑AR en Android (Scene Viewer) ---- */
-    if (isAndroid) {
-      const intentUrl =
-        `intent://arvr.google.com/scene-viewer/1.0` +
-        `?file=${encodeURIComponent(glbUrl)}` +
-        `&mode=ar_only` +
-        `&resizable=true` +
-        `#Intent;scheme=https;package=com.google.ar.core;` +
-        `action=android.intent.action.VIEW;` +
-        `S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+  /* ---- Auto‑Quick Look en iOS ---- */
+  if (isIOS && !skipAR) {
+    window.location.replace(usdzUrl);
+  }
 
-      // Pequeño retraso para permitir la carga del visor 3‑D si AR falla
-      setTimeout(() => { window.location.href = intentUrl; }, 500);
-    }
+  /* ---- Auto‑Scene Viewer en Android ---- */
+  if (isAndroid && !skipAR) {
+    const fallback = `${window.location.origin}${window.location.pathname}?noar=1`;
+    const intent   =
+      `intent://arvr.google.com/scene-viewer/1.0` +
+      `?file=${encodeURIComponent(glbUrl)}` +
+      `&mode=ar_only` +
+      `&resizable=true` +
+      `#Intent;scheme=https;package=com.google.ar.core;` +
+      `action=android.intent.action.VIEW;` +
+      `S.browser_fallback_url=${encodeURIComponent(fallback)};end;`;
 
-    /* ---- Fallback: botón manual sigue funcionando ---- */
-  </script>
+    setTimeout(() => { window.location.href = intent; }, 500);
+  }
+</script>
+
 
 </body>
 </html>
