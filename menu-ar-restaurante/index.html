@@ -5,12 +5,14 @@
     <title>La Casona Verde · Menú AR</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Performance -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
-
     <!-- Estilos -->
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- model-viewer (para 3D + AR) -->
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+    </script>
   </head>
   <body>
     <header class="app-header">
@@ -30,8 +32,13 @@
           </p>
         </div>
 
-        <nav id="menu-tabs" class="menu-tabs"></nav>
-        <section id="menu" class="menu-section"></section>
+        <nav id="menu-tabs" class="menu-tabs">
+          <!-- Se llena desde app.js -->
+        </nav>
+
+        <section id="menu" class="menu-section">
+          <!-- Aquí se inyectan los platos desde app.js -->
+        </section>
       </section>
     </main>
 
@@ -39,7 +46,6 @@
       <p>La Casona Verde · Menú AR</p>
     </footer>
 
-    <!-- Script principal: el import de model-viewer será dinámico dentro de app.js -->
-    <script type="module" src="app.js" defer></script>
+    <script src="app.js"></script>
   </body>
 </html>
