@@ -1,125 +1,348 @@
-// --- 1. Carga diferida de model-viewer ---
-let modelViewerReady = false;
-async function ensureModelViewerLoaded() {
-  if (modelViewerReady) return;
-  await import('https://cdn.jsdelivr.net/npm/@google/model-viewer@4.1.0/dist/model-viewer.min.js');
-  modelViewerReady = true;
-}
+// Modelo AR por defecto (hamburguesa)
+const defaultModel = {
+  glb: "assets/models/hamburguesa.glb",
+  usdz: "assets/models/hamburguesa.usdz",
+};
 
-// --- 2. Prefetch del modelo cuando el usuario muestra intención ---
-function prefetchModel(url) {
-  if (!url) return;
-  const link = document.createElement('link');
-  link.rel = 'prefetch';
-  link.as = 'fetch';
-  link.href = url;
-  link.crossOrigin = 'anonymous';
-  document.head.appendChild(link);
-}
+// Modelo AR para Perro Caliente Gourmet
+const hotdogModel = {
+  glb: "assets/models/perro-caliente.glb",
+  usdz: "assets/models/perro-caliente.usdz",
+};
 
-// --- 3. Datos del menú ---
+// Modelo AR para Roll de Fresa y Crema
+const rollModel = {
+  glb: "assets/models/roll-fresa.glb",
+  usdz: "assets/models/roll-fresa.usdz",
+};
+
+// Modelo AR para Cheesecake Clásico Horneado
+const cheesecakeModel = {
+  glb: "assets/models/cheesecake.glb",
+  usdz: "assets/models/cheesecake.usdz",
+};
+
+// Modelo AR para Pizza Artesanal
+const pizzaModel = {
+  glb: "assets/models/pizza.glb",
+  usdz: "assets/models/pizza.usdz",
+};
+
+// Modelo AR para Papas Bravas La Casona
+const papasBravasModel = {
+  glb: "assets/models/papas-bravas.glb",
+  usdz: "assets/models/papas-bravas.usdz",
+};
+
+// Modelo AR para Tacos de la Casa
+const tacosModel = {
+  glb: "assets/models/tacos.glb",
+  usdz: "assets/models/tacos.usdz",
+};
+
+// Modelo AR para Cupcake de Chocolate
+const cupcakeModel = {
+  glb: "assets/models/cupcake.glb",
+  usdz: "assets/models/cupcake.usdz",
+};
+
+// Modelo AR para Sushi de la Casona
+const sushiModel = {
+  glb: "assets/models/sushi.glb",
+  usdz: "assets/models/sushi.usdz",
+};
+
+// Definición de categorías del menú
 const categories = [
-  { id: 'entradas', label: 'Entradas' },
-  { id: 'platos-fuertes', label: 'Platos fuertes' },
-  { id: 'postres', label: 'Postres' },
+  { id: "entradas", label: "Entradas" },
+  { id: "platos-fuertes", label: "Platos fuertes" },
+  { id: "postres", label: "Postres" },
 ];
 
-const defaultModel = { glb: 'assets/models/hamburguesa.glb', usdz: 'assets/models/hamburguesa.usdz', poster: 'assets/posters/hamburguesa.jpg' };
-const hotdogModel  = { glb: 'assets/models/perro-caliente.glb', usdz: 'assets/models/perro-caliente.usdz', poster: 'assets/posters/perro.jpg' };
-const rollModel    = { glb: 'assets/models/roll-fresa.glb', usdz: 'assets/models/roll-fresa.usdz', poster: 'assets/posters/roll.jpg' };
-const cheesecakeModel = { glb: 'assets/models/cheesecake.glb', usdz: 'assets/models/cheesecake.usdz', poster: 'assets/posters/cheesecake.jpg' };
-const pizzaModel   = { glb: 'assets/models/pizza.glb', usdz: 'assets/models/pizza.usdz', poster: 'assets/posters/pizza.jpg' };
-const papasModel   = { glb: 'assets/models/papas-bravas.glb', usdz: 'assets/models/papas-bravas.usdz', poster: 'assets/posters/papas.jpg' };
-const tacosModel   = { glb: 'assets/models/tacos.glb', usdz: 'assets/models/tacos.usdz', poster: 'assets/posters/tacos.jpg' };
-const cupcakeModel = { glb: 'assets/models/cupcake.glb', usdz: 'assets/models/cupcake.usdz', poster: 'assets/posters/cupcake.jpg' };
-const sushiModel   = { glb: 'assets/models/sushi.glb', usdz: 'assets/models/sushi.usdz', poster: 'assets/posters/sushi.jpg' };
-
+// Platos (precios en pesos colombianos COP)
 const dishes = [
-  { id: 'tacos', category: 'entradas', name: 'Tacos de la Casona', price: '$18.900', image: 'assets/images/tacos.jpg', model: tacosModel },
-  { id: 'hamburguesa', category: 'platos-fuertes', name: 'Hamburguesa de la Casa', price: '$32.900', image: 'assets/images/hamburguesa.jpg', model: defaultModel },
-  { id: 'pizza', category: 'platos-fuertes', name: 'Pizza Artesanal', price: '$29.900', image: 'assets/images/pizza.jpg', model: pizzaModel },
-  { id: 'cupcake', category: 'postres', name: 'Cupcake de Chocolate', price: '$16.900', image: 'assets/images/cupcake.jpg', model: cupcakeModel },
+  // ENTRADAS
+  {
+    id: "tacos-casona",
+    category: "entradas",
+    name: "Tacos de la Casona",
+    price: "$18.900 COP",
+    description:
+      "Dos tacos sobre tabla de madera, servidos con guiso de carne, fríjoles, vegetales frescos y limón para ajustar al gusto.",
+    tags: ["Para compartir", "Street style", "AR disponible"],
+    image: "assets/images/tacos.jpg",
+    model: tacosModel,
+  },
+  {
+    id: "sushi-casona",
+    category: "entradas",
+    name: "Tabla de Sushi de la Casa",
+    price: "$22.900 COP",
+    description:
+      "Selección de nigiris sobre tabla de madera, con cortes frescos de pescado y mariscos para disfrutar en cada bocado.",
+    tags: ["Fresco", "Mar", "AR disponible"],
+    image: "assets/images/sushi.jpg",
+    model: sushiModel, // modelo AR del sushi
+  },
+  {
+    id: "papas-bravas",
+    category: "entradas",
+    name: "Papas Bravas La Casona",
+    price: "$19.500 COP",
+    description:
+      "Papas rústicas al horno con salsa brava ahumada y alioli de ajo asado.",
+    tags: ["Vegetariano", "Picante suave", "AR disponible"],
+    image: "assets/images/papas-bravas.jpg",
+    model: papasBravasModel, // modelo AR de papas bravas
+  },
+
+  // PLATOS FUERTES
+  {
+    id: "hamburguesa-obsidiana",
+    category: "platos-fuertes",
+    name: "Hamburguesa de la Casa",
+    price: "$32.900 COP",
+    description:
+      "Carne 150 g a la parrilla, queso cheddar, vegetales frescos y salsa verde de la casa en pan brioche.",
+    tags: ["Carne", "Signature", "AR disponible"],
+    image: "assets/images/hamburguesa.jpg",
+    model: defaultModel, // modelo AR de la hamburguesa
+  },
+  {
+    id: "perro-gourmet",
+    category: "platos-fuertes",
+    name: "Perro Caliente Gourmet",
+    price: "$26.900 COP",
+    description:
+      "Salchicha artesanal, cebolla caramelizada, salsa de la casa y crumble de tocineta en pan tostado.",
+    tags: ["Street style", "Recomendado", "AR disponible"],
+    image: "assets/images/perro-caliente.jpg",
+    model: hotdogModel, // modelo del perro-caliente
+  },
+  {
+    id: "pizza-artesanal",
+    category: "platos-fuertes",
+    name: "Pizza Artesanal de la Casa",
+    price: "$29.900 COP",
+    description:
+      "Pizza de masa esponjosa horneada en casa, con mezcla de quesos, embutidos y toques de jalapeño para un picante suave.",
+    tags: ["Para compartir", "Confort", "AR disponible"],
+    image: "assets/images/pizza.jpg",
+    model: pizzaModel, // modelo de la pizza
+  },
+
+  // POSTRES
+  {
+    id: "cupcake-chocolate",
+    category: "postres",
+    name: "Cupcake de Chocolate",
+    price: "$16.900 COP",
+    description:
+      "Cupcake de chocolate húmedo con frosting cremoso de cacao y topping de malvaviscos y salsa de chocolate.",
+    tags: ["Chocolate", "Dulce", "AR disponible"],
+    image: "assets/images/cupcake.jpg",
+    model: cupcakeModel, // modelo AR del cupcake
+  },
+  {
+    id: "cheesecake-clasico",
+    category: "postres",
+    name: "Cheesecake Clásico Horneado",
+    price: "$18.500 COP",
+    description:
+      "Rebanada de cheesecake horneado con base de galleta mantequillosa y textura cremosa, con acabado dorado en la superficie.",
+    tags: ["Suave", "Cremoso", "AR disponible"],
+    image: "assets/images/cheesecake.jpg",
+    model: cheesecakeModel, // modelo del cheesecake clásico
+  },
+  {
+    id: "roll-fresa-crema",
+    category: "postres",
+    name: "Roll de Fresa y Crema",
+    price: "$17.900 COP",
+    description:
+      "Bizcocho esponjoso enrollado, relleno de crema suave y trozos de fresa, perfecto para compartir o acompañar el café.",
+    tags: ["Frutal", "Suave", "AR disponible"],
+    image: "assets/images/roll-fresa.jpg",
+    model: rollModel, // modelo del roll de fresa y crema
+  },
 ];
 
-// --- Renderizado de tabs y platos ---
-const menu = document.getElementById('menu');
-const tabs = document.getElementById('menu-tabs');
-let activeCategory = 'entradas';
+const menuContainer = document.getElementById("menu");
+const tabsContainer = document.getElementById("menu-tabs");
+
+let activeCategory = "entradas";
+
+/* Render de tabs */
 
 function renderTabs() {
-  tabs.innerHTML = '';
-  categories.forEach(cat => {
-    const btn = document.createElement('button');
-    btn.className = 'menu-tab' + (cat.id === activeCategory ? ' active' : '');
-    btn.dataset.categoryId = cat.id;
-    btn.textContent = cat.label;
-    tabs.appendChild(btn);
+  tabsContainer.innerHTML = "";
+
+  categories.forEach((cat) => {
+    const button = document.createElement("button");
+    button.className =
+      "menu-tab" + (cat.id === activeCategory ? " active" : "");
+    button.dataset.categoryId = cat.id;
+    button.innerHTML = `<span>${cat.label}</span>`;
+    tabsContainer.appendChild(button);
   });
 }
+
+/* Render de platos */
 
 function renderMenu() {
-  menu.innerHTML = '';
-  const items = dishes.filter(d => d.category === activeCategory);
-  items.forEach(dish => {
-    const card = document.createElement('article');
-    card.className = 'dish-card';
+  menuContainer.innerHTML = "";
+
+  const filteredDishes = dishes.filter(
+    (dish) => dish.category === activeCategory
+  );
+
+  filteredDishes.forEach((dish, index) => {
+    const card = document.createElement("article");
+    card.className = "dish-card";
+    card.dataset.dishId = dish.id;
+
+    // delay escalonado para la animación
+    card.style.animationDelay = `${index * 70}ms`;
+
     card.innerHTML = `
       <div class="dish-image-wrapper">
-        <img src="${dish.image}" alt="${dish.name}" class="dish-image" loading="lazy" decoding="async" />
+        <img src="${dish.image}" alt="${dish.name}" class="dish-image" />
       </div>
+
       <div class="dish-content">
-        <h2 class="dish-name">${dish.name}</h2>
-        <span class="dish-price">${dish.price}</span>
-        <div class="dish-actions">
-          <button class="ar-button" data-id="${dish.id}">📱 Ver en AR</button>
+        <div class="dish-header-line">
+          <h2 class="dish-name">${dish.name}</h2>
+          <span class="dish-price">${dish.price}</span>
         </div>
-      </div>`;
-    const btn = card.querySelector('.ar-button');
-    ['mouseenter', 'focus'].forEach(ev => btn.addEventListener(ev, () => prefetchModel(dish.model.glb), { once: true }));
-    menu.appendChild(card);
+
+        <p class="dish-description">${dish.description}</p>
+
+        <div class="dish-meta">
+          ${dish.tags
+            .map((tag) => `<span class="dish-tag">${tag}</span>`)
+            .join("")}
+        </div>
+
+        <div class="dish-actions">
+          <button
+            class="ar-button"
+            data-dish-id="${dish.id}"
+          >
+            <span class="ar-button-icon">📱</span>
+            <span>
+              Ver en realidad aumentada
+              <span class="ar-button-sub">Visualízalo sobre tu mesa</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    menuContainer.appendChild(card);
   });
 }
 
-// --- Overlay AR ---
-let overlay, viewer;
-async function openAR(dish) {
-  await ensureModelViewerLoaded();
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.className = 'ar-overlay';
-    overlay.innerHTML = `
-      <div class="ar-modal">
+/* Modal AR */
+
+let arOverlayEl;
+let arModelViewer;
+let arTitleEl;
+let arSubtitleEl;
+
+function createArOverlayIfNeeded() {
+  if (arOverlayEl) return;
+
+  arOverlayEl = document.createElement("div");
+  arOverlayEl.className = "ar-overlay";
+  arOverlayEl.innerHTML = `
+    <div class="ar-modal">
+      <div class="ar-modal-header">
+        <div>
+          <div class="ar-modal-title">Vista AR del plato</div>
+          <div class="ar-modal-subtitle">
+            Usa el botón de AR del visor para colocarlo en tu entorno.
+          </div>
+        </div>
         <button class="ar-modal-close" aria-label="Cerrar">&times;</button>
-        <model-viewer id="viewer" ar ar-modes="webxr scene-viewer quick-look"
-          camera-controls reveal="interaction" environment-image="neutral"
-          exposure="1" shadow-intensity="0.5" loading="lazy"></model-viewer>
-      </div>`;
-    document.body.appendChild(overlay);
-    viewer = document.getElementById('viewer');
-    overlay.querySelector('.ar-modal-close').onclick = () => overlay.classList.remove('open');
-    overlay.onclick = e => { if (e.target === overlay) overlay.classList.remove('open'); };
-  }
-  viewer.setAttribute('poster', dish.model.poster);
-  viewer.setAttribute('src', dish.model.glb);
-  viewer.setAttribute('ios-src', dish.model.usdz);
-  overlay.classList.add('open');
+      </div>
+
+      <model-viewer
+        id="ar-model-viewer"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        auto-rotate
+        environment-image="neutral"
+        exposure="1.0"
+      >
+      </model-viewer>
+    </div>
+  `;
+
+  document.body.appendChild(arOverlayEl);
+
+  arModelViewer = document.getElementById("ar-model-viewer");
+  arTitleEl = arOverlayEl.querySelector(".ar-modal-title");
+  arSubtitleEl = arOverlayEl.querySelector(".ar-modal-subtitle");
+
+  const closeBtn = arOverlayEl.querySelector(".ar-modal-close");
+  closeBtn.addEventListener("click", closeArOverlay);
+
+  arOverlayEl.addEventListener("click", (evt) => {
+    if (evt.target === arOverlayEl) {
+      closeArOverlay();
+    }
+  });
 }
 
-// --- Eventos ---
-document.addEventListener('click', e => {
-  const tab = e.target.closest('.menu-tab');
+function openArOverlay(dish) {
+  if (!dish.model) return;
+
+  createArOverlayIfNeeded();
+
+  arModelViewer.setAttribute("src", dish.model.glb);
+  arModelViewer.setAttribute("ios-src", dish.model.usdz);
+
+  arTitleEl.textContent = dish.name;
+  arSubtitleEl.textContent =
+    "Pulsa en el botón de AR del visor para colocar el plato sobre tu mesa.";
+
+  arOverlayEl.classList.add("open");
+}
+
+function closeArOverlay() {
+  if (!arOverlayEl) return;
+  arOverlayEl.classList.remove("open");
+  arModelViewer.removeAttribute("src");
+  arModelViewer.removeAttribute("ios-src");
+}
+
+/* Eventos globales */
+
+// Cambio de categoría (tabs)
+document.addEventListener("click", (event) => {
+  const tab = event.target.closest(".menu-tab");
   if (tab) {
-    activeCategory = tab.dataset.categoryId;
-    renderTabs();
-    renderMenu();
+    const newCategory = tab.dataset.categoryId;
+    if (newCategory && newCategory !== activeCategory) {
+      activeCategory = newCategory;
+      renderTabs();
+      renderMenu();
+    }
     return;
   }
-  const btn = e.target.closest('.ar-button');
-  if (!btn) return;
-  const dish = dishes.find(d => d.id === btn.dataset.id);
-  if (dish) openAR(dish);
+
+  // Click en botón AR
+  const button = event.target.closest(".ar-button");
+  if (!button) return;
+
+  const dishId = button.dataset.dishId;
+  const dish = dishes.find((d) => d.id === dishId);
+  if (!dish) return;
+
+  openArOverlay(dish);
 });
 
-// --- Inicializar ---
+// Inicializar
 renderTabs();
 renderMenu();
