@@ -2,8 +2,7 @@
   --bg: #020711;
   --bg-card: #050b0b;
   --bg-elevated: #020814;
-  --accent: #429079; /* Verde principal solicitado */
-  --accent-soft: rgba(66, 144, 121, 0.18);
+  --accent: #429079;
   --accent-strong: #2f6b5a;
   --text-main: #f9fafb;
   --text-muted: #9ca3af;
@@ -13,16 +12,9 @@
   --transition-fast: 180ms ease-out;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background:
     radial-gradient(circle at top, rgba(66, 144, 121, 0.22) 0, transparent 55%),
     radial-gradient(circle at bottom, #020617 0, #010208 55%);
@@ -31,8 +23,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
-/* HEADER */
 
 .app-header {
   padding: 1.6rem 1.25rem 0.9rem;
@@ -55,126 +45,20 @@ body {
   margin-bottom: 0.45rem;
 }
 
-.restaurant-name {
-  font-size: 1.55rem;
-  letter-spacing: 0.04em;
-  margin: 0;
-}
-
-.restaurant-subtitle {
-  margin-top: 0.4rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-/* MAIN */
-
-.app-main {
-  flex: 1;
-  padding: 0.75rem 0.75rem 1.25rem;
-}
+.restaurant-name { font-size: 1.55rem; margin: 0; }
+.restaurant-subtitle { margin-top: 0.4rem; font-size: 0.85rem; color: var(--text-muted); }
 
 .menu-shell {
   max-width: 780px;
   margin: 0 auto;
-  background: linear-gradient(
-      to bottom right,
-      rgba(15, 23, 42, 0.7),
-      rgba(0, 0, 0, 0.9)
-    );
+  background: linear-gradient(to bottom right, rgba(15,23,42,0.7), rgba(0,0,0,0.9));
   border-radius: 1.5rem;
   padding: 1rem 0.85rem 1.2rem;
-  border: 1px solid rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(15,23,42,0.9);
   box-shadow: 0 26px 60px rgba(0, 0, 0, 0.7);
 }
 
-.menu-header {
-  padding: 0 0.35rem 0.4rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.menu-title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.menu-subtitle {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-/* TABS CATEGORÍAS */
-
-.menu-tabs {
-  margin-top: 0.75rem;
-  margin-bottom: 0.4rem;
-  display: flex;
-  gap: 0.4rem;
-  overflow-x: auto;
-  padding-bottom: 0.25rem;
-}
-
-.menu-tabs::-webkit-scrollbar {
-  height: 4px;
-}
-.menu-tabs::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.5);
-  border-radius: 999px;
-}
-
-.menu-tab {
-  border-radius: 999px;
-  font-size: 0.76rem;
-  padding: 0.32rem 0.9rem;
-  border: 1px solid rgba(148, 163, 184, 0.45);
-  background: rgba(15, 23, 42, 0.72);
-  color: var(--text-muted);
-  cursor: pointer;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: background var(--transition-fast), color var(--transition-fast),
-    border-color var(--transition-fast), transform var(--transition-fast);
-}
-
-.menu-tab span {
-  font-size: 0.82rem;
-}
-
-.menu-tab:hover {
-  border-color: rgba(66, 144, 121, 0.7);
-  color: var(--text-main);
-  transform: translateY(-1px);
-}
-
-.menu-tab.active {
-  background: radial-gradient(
-    circle at top,
-    var(--accent),
-    var(--accent-strong)
-  );
-  color: #041713;
-  border-color: transparent;
-  box-shadow: 0 9px 22px rgba(15, 118, 90, 0.5);
-}
-
-/* LISTA DE PLATOS */
-
-.menu-section {
-  margin-top: 0.6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Tarjetas de plato */
-
-/* Móvil: imagen arriba, info abajo */
+/* Cards y botones */
 .dish-card {
   background: radial-gradient(circle at top left, #020714, #020617 45%, #000 100%);
   border-radius: var(--radius-xl);
@@ -184,81 +68,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  position: relative;
   overflow: hidden;
-  animation: dish-enter 260ms var(--transition-fast) both;
 }
 
-/* Imagen plato: más grande */
-.dish-image-wrapper {
-  border-radius: 1.05rem;
-  overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  aspect-ratio: 4 / 3;
-  background: radial-gradient(circle at center, #020617, #000 80%);
-}
-
-.dish-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Contenido plato */
-
-.dish-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.dish-header-line {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6rem;
-}
-
-.dish-name {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.dish-price {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--accent);
-}
-
-.dish-description {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  line-height: 1.35;
-}
-
-.dish-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.1rem;
-}
-
-.dish-tag {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.45rem;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  color: var(--text-muted);
-}
-
-/* Botones / acciones */
-
-.dish-actions {
-  margin-top: 0.45rem;
-}
-
-/* Botón AR más pequeño y discreto */
 .ar-button {
   width: 100%;
   max-width: 210px;
@@ -274,35 +86,13 @@ body {
   justify-content: center;
   gap: 0.32rem;
   cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
-    opacity var(--transition-fast), background var(--transition-fast);
   box-shadow: 0 8px 18px rgba(4, 120, 87, 0.45);
 }
 
 .ar-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 11px 24px rgba(4, 120, 87, 0.6);
-  background: linear-gradient(135deg, #48a588, #306f5e);
 }
-
-.ar-button:active {
-  transform: translateY(0);
-  box-shadow: 0 7px 16px rgba(4, 120, 87, 0.45);
-  opacity: 0.94;
-}
-
-.ar-button-icon {
-  font-size: 0.9rem;
-}
-
-.ar-button-sub {
-  display: block;
-  font-size: 0.58rem;
-  font-weight: 400;
-  opacity: 0.95;
-}
-
-/* model-viewer: modal flotante */
 
 .ar-overlay {
   position: fixed;
@@ -311,47 +101,19 @@ body {
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
   z-index: 40;
 }
 
-.ar-overlay.open {
-  display: flex;
-}
+.ar-overlay.open { display: flex; }
 
 .ar-modal {
   background: #020617;
   border-radius: 1.25rem;
-  padding: 0.8rem 0.8rem 0.7rem;
+  padding: 0.8rem;
   max-width: 480px;
   width: 100%;
   border: 1px solid #1e293b;
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.6);
-}
-
-.ar-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.4rem;
-}
-
-.ar-modal-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.ar-modal-subtitle {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
-.ar-modal-close {
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  cursor: pointer;
 }
 
 model-viewer {
@@ -359,72 +121,5 @@ model-viewer {
   height: 260px;
   border-radius: 1rem;
   overflow: hidden;
-}
-
-/* Footer */
-
-.app-footer {
-  text-align: center;
-  padding: 0.5rem 0.75rem 1rem;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  opacity: 0.8;
-}
-
-/* Animación de entrada */
-
-@keyframes dish-enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Desktop: imagen a la izquierda, más grande */
-
-@media (min-width: 768px) {
-  .app-header {
-    padding-top: 2.1rem;
-  }
-
-  .restaurant-name {
-    font-size: 1.9rem;
-  }
-
-  .app-main {
-    padding: 1.5rem 1.25rem 2rem;
-  }
-
-  .menu-shell {
-    padding: 1.3rem 1.2rem 1.5rem;
-  }
-
-  .dish-card {
-    display: grid;
-    grid-template-columns: 210px 1fr; /* imagen más grande en desktop */
-    align-items: stretch;
-    padding: 1rem;
-    gap: 1rem;
-  }
-
-  .dish-image-wrapper {
-    height: 100%;
-    aspect-ratio: auto;
-  }
-
-  .dish-actions {
-    margin-top: 0.6rem;
-  }
-
-  .ar-button {
-    width: auto;
-  }
-
-  model-viewer {
-    height: 320px;
-  }
+  background: #000;
 }
