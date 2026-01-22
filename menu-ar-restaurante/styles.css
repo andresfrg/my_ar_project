@@ -409,6 +409,37 @@ model-viewer {
   color: var(--text-muted);
 }
 
+/* ================= MODEL-VIEWER AR BUTTON: 📱 AR ================= */
+/* Fuerza ocultar el cubo y mostrar "📱 AR" */
+
+model-viewer::part(ar-button) {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong)) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em !important;
+  box-shadow: 0 10px 20px rgba(180, 35, 24, 0.22) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Oculta el icono (cubo) si viene como SVG dentro del botón */
+model-viewer::part(ar-button) svg,
+model-viewer::part(ar-button) .icon,
+model-viewer::part(ar-button) .ar-button,
+model-viewer::part(ar-button) img {
+  display: none !important;
+}
+
+/* Inserta el texto "📱 AR" */
+model-viewer::part(ar-button)::after {
+  content: "📱 AR" !important;
+}
+
 /* ================= DESKTOP ================= */
 
 @media (min-width: 768px) {
@@ -416,5 +447,9 @@ model-viewer {
     display: grid;
     grid-template-columns: 210px 1fr;
     gap: 1rem;
+  }
+
+  model-viewer {
+    height: 320px;
   }
 }
