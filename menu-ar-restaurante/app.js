@@ -21,12 +21,14 @@ function isIOS() {
 function tryOpenExternalBrowser(url) {
   const ua = navigator.userAgent || "";
 
+  // iOS: intentar Chrome si está instalado
   if (isIOS()) {
     const chromeUrl = url.replace(/^https?:\/\//, "googlechrome://");
     window.location.href = chromeUrl;
     return;
   }
 
+  // Android: intentar intent a Chrome
   if (/Android/i.test(ua)) {
     try {
       const u = new URL(url);
@@ -39,6 +41,7 @@ function tryOpenExternalBrowser(url) {
     } catch {}
   }
 
+  // Desktop u otros
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
@@ -331,7 +334,7 @@ function renderMenu() {
 }
 
 /* =========================
-   Modal AR
+   Modal AR (con botón 📱 AR propio)
    ========================= */
 
 let arOverlayEl;
@@ -350,20 +353,27 @@ function createArOverlayIfNeeded() {
         <div>
           <div class="ar-modal-title">Vista AR del plato</div>
           <div class="ar-modal-subtitle">
-            Usa el botón de AR del visor para colocarlo en tu entorno.
+            Pulsa el botón 📱 AR para colocarlo en tu entorno.
           </div>
         </div>
-        <button class="ar-modal-close">&times;</button>
+        <button class="ar-modal-close" aria-label="Cerrar">&times;</button>
       </div>
 
-      <model-viewer
-        id="ar-model-viewer"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        auto-rotate
-        exposure="1.0">
-      </model-viewer>
+      <div class="ar-viewer-wrap">
+        <model-viewer
+          id="ar-model-viewer"
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          camera-controls
+          auto-rotate
+          environment-image="neutral"
+          exposure="1.0">
+        </model-viewer>
+
+        <button class="ar-float-btn" id="arFloatBtn" type="button">
+          📱 AR
+        </button>
+      </div>
     </div>
   `;
 
@@ -373,29 +383,42 @@ function createArOverlayIfNeeded() {
   arTitleEl = arOverlayEl.querySelector(".ar-modal-title");
   arSubtitleEl = arOverlayEl.querySelector(".ar-modal-subtitle");
 
-  arOverlayEl
-    .querySelector(".ar-modal-close")
-    .addEventListener("click", closeArOverlay);
+  const closeBtn = arOverlayEl.querySelector(".ar-modal-close");
+  closeBtn.addEventListener("click", closeArOverlay);
 
-  arOverlayEl.addEventListener("click", (e) => {
-    if (e.target === arOverlayEl) closeArOverlay();
+  arOverlayEl.addEventListener("click", (evt) => {
+    if (evt.target === arOverlayEl) closeArOverlay();
+  });
+
+  const arFloatBtn = document.getElementById("arFloatBtn");
+  arFloatBtn.addEventListener("click", async () => {
+    // Método oficial de model-viewer
+    if (arModelViewer && typeof arModelViewer.activateAR === "function") {
+      try {
+        await arModelViewer.activateAR();
+      } catch {
+        // fallback: si el navegador bloquea, no hacemos nada (usuario puede usar el botón nativo si aparece)
+      }
+    }
   });
 }
 
 function openArOverlay(dish) {
+  if (!dish.model) return;
+
   createArOverlayIfNeeded();
 
   arModelViewer.setAttribute("src", dish.model.glb);
   arModelViewer.setAttribute("ios-src", dish.model.usdz);
 
   arTitleEl.textContent = dish.name;
-  arSubtitleEl.textContent =
-    "Pulsa en el botón de AR del visor para colocarlo sobre tu mesa.";
+  arSubtitleEl.textContent = "Pulsa el botón 📱 AR para colocarlo en tu entorno.";
 
   arOverlayEl.classList.add("open");
 }
 
 function closeArOverlay() {
+  if (!arOverlayEl) return;
   arOverlayEl.classList.remove("open");
   arModelViewer.removeAttribute("src");
   arModelViewer.removeAttribute("ios-src");
