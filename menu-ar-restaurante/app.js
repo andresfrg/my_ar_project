@@ -1,5 +1,5 @@
 /* =========================
-   In-App Browser Gate (IG/FB/TikTok) - con estilos del theme
+   Detección navegador interno
    ========================= */
 
 function isInAppBrowser() {
@@ -14,9 +14,43 @@ function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 }
 
+/* =========================
+   Intentar abrir navegador externo
+   ========================= */
+
+function tryOpenExternalBrowser(url) {
+  const ua = navigator.userAgent || "";
+
+  // iOS: intentar Chrome si está instalado
+  if (isIOS()) {
+    const chromeUrl = url.replace(/^https?:\/\//, "googlechrome://");
+    window.location.href = chromeUrl;
+    return;
+  }
+
+  // Android: intentar intent a Chrome
+  if (/Android/i.test(ua)) {
+    try {
+      const u = new URL(url);
+      const intentUrl = `intent://${u.host}${u.pathname}${u.search}#Intent;scheme=${u.protocol.replace(
+        ":",
+        ""
+      )};package=com.android.chrome;end`;
+      window.location.href = intentUrl;
+      return;
+    } catch {}
+  }
+
+  // Desktop u otros
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+/* =========================
+   Gate visual
+   ========================= */
+
 function showOpenInBrowserGate() {
   const url = window.location.href;
-  const browserName = isIOS() ? "Safari" : "Chrome";
 
   document.body.innerHTML = `
     <div class="browser-gate">
@@ -24,105 +58,93 @@ function showOpenInBrowserGate() {
         <div class="browser-gate-pill">Inno-Menu · AR</div>
 
         <h2 class="browser-gate-title">
-          Para ver Realidad Aumentada, ábrelo en ${browserName}
+          Para ver Realidad Aumentada, ábrelo en tu navegador externo
         </h2>
 
         <p class="browser-gate-text">
-          Instagram/Facebook suelen abrir enlaces dentro de la app y eso puede bloquear el visor 3D/AR.
-          Abre este link en <strong>${browserName}</strong> para que funcione correctamente.
+          Instagram/Facebook abren enlaces dentro de la app y eso puede bloquear el visor 3D/AR.
+          Abre este link en tu navegador (Safari o Chrome).
         </p>
 
         <div class="browser-gate-actions">
-          <a class="browser-gate-primary" href="${url}" target="_blank" rel="noopener noreferrer">
-            Abrir en ${browserName}
-          </a>
+          <button class="browser-gate-primary" id="openExternalBtn" type="button">
+            Abrir en navegador (intentar)
+          </button>
 
-          <button class="browser-gate-secondary" id="copyGateLink">
+          <button class="browser-gate-secondary" id="copyGateLink" type="button">
             Copiar link
           </button>
         </div>
 
         <div class="browser-gate-hint">
-          <strong>Si no abre:</strong><br/>
-          ${
-            isIOS()
-              ? "Toca el menú ⋯ (arriba) → <em>Abrir en Safari</em>."
-              : "Toca el menú ⋯ (arriba) → <em>Abrir en navegador</em> o <em>Abrir en Chrome</em>."
-          }
-          <br/><br/>
-          Tip: En iPhone el AR funciona mejor desde Safari (USDZ / Quick Look).
+          <strong>Si el botón no funciona:</strong><br/>
+          Toca el menú <strong>⋯</strong> (arriba) y elige
+          <em>Abrir en navegador</em> o <em>Abrir en Safari</em>.
         </div>
       </div>
     </div>
   `;
 
-  const btn = document.getElementById("copyGateLink");
-  if (btn) {
-    btn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(url);
-        btn.textContent = "¡Listo! Link copiado";
-      } catch {
-        btn.textContent = "Copia manualmente la URL";
-      }
-      setTimeout(() => (btn.textContent = "Copiar link"), 1600);
-    });
-  }
+  document
+    .getElementById("openExternalBtn")
+    .addEventListener("click", () => tryOpenExternalBrowser(url));
+
+  const copyBtn = document.getElementById("copyGateLink");
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      copyBtn.textContent = "¡Listo! Link copiado";
+    } catch {
+      copyBtn.textContent = "Copia manualmente la URL";
+    }
+    setTimeout(() => (copyBtn.textContent = "Copiar link"), 1600);
+  });
 }
 
 /* =========================
    MODELOS AR
    ========================= */
 
-// Modelo AR por defecto (hamburguesa)
 const defaultModel = {
   glb: "assets/models/hamburguesa.glb",
   usdz: "assets/models/hamburguesa.usdz",
 };
 
-// Modelo AR para Perro Caliente Gourmet
 const hotdogModel = {
   glb: "assets/models/perro-caliente.glb",
   usdz: "assets/models/perro-caliente.usdz",
 };
 
-// Modelo AR para Roll de Fresa y Crema
 const rollModel = {
   glb: "assets/models/roll-fresa.glb",
   usdz: "assets/models/roll-fresa.usdz",
 };
 
-// Modelo AR para Cheesecake Clásico Horneado
 const cheesecakeModel = {
   glb: "assets/models/cheesecake.glb",
   usdz: "assets/models/cheesecake.usdz",
 };
 
-// Modelo AR para Pizza Artesanal
 const pizzaModel = {
   glb: "assets/models/pizza.glb",
   usdz: "assets/models/pizza.usdz",
 };
 
-// Modelo AR para Papas Bravas La Casona
 const papasBravasModel = {
   glb: "assets/models/papas-bravas.glb",
   usdz: "assets/models/papas-bravas.usdz",
 };
 
-// Modelo AR para Tacos de la Casa
 const tacosModel = {
   glb: "assets/models/tacos.glb",
   usdz: "assets/models/tacos.usdz",
 };
 
-// Modelo AR para Cupcake de Chocolate
 const cupcakeModel = {
   glb: "assets/models/cupcake.glb",
   usdz: "assets/models/cupcake.usdz",
 };
 
-// Modelo AR para Sushi de la Casona
 const sushiModel = {
   glb: "assets/models/sushi.glb",
   usdz: "assets/models/sushi.usdz",
@@ -132,23 +154,20 @@ const sushiModel = {
    DATA MENÚ
    ========================= */
 
-// Definición de categorías del menú
 const categories = [
   { id: "entradas", label: "Entradas" },
   { id: "platos-fuertes", label: "Platos fuertes" },
   { id: "postres", label: "Postres" },
 ];
 
-// Platos (precios en pesos colombianos COP)
 const dishes = [
-  // ENTRADAS
   {
     id: "tacos-casona",
     category: "entradas",
     name: "Tacos de la Casona",
     price: "$18.900 COP",
     description:
-      "Dos tacos sobre tabla de madera, servidos con guiso de carne, fríjoles, vegetales frescos y limón para ajustar al gusto.",
+      "Dos tacos sobre tabla de madera, servidos con guiso de carne, fríjoles, vegetales frescos y limón.",
     tags: ["Para compartir", "Street style", "AR disponible"],
     image: "assets/images/tacos.jpg",
     model: tacosModel,
@@ -159,7 +178,7 @@ const dishes = [
     name: "Tabla de Sushi de la Casa",
     price: "$22.900 COP",
     description:
-      "Selección de nigiris sobre tabla de madera, con cortes frescos de pescado y mariscos para disfrutar en cada bocado.",
+      "Selección de nigiris con cortes frescos de pescado y mariscos.",
     tags: ["Fresco", "Mar", "AR disponible"],
     image: "assets/images/sushi.jpg",
     model: sushiModel,
@@ -170,20 +189,19 @@ const dishes = [
     name: "Papas Bravas La Casona",
     price: "$19.500 COP",
     description:
-      "Papas rústicas al horno con salsa brava ahumada y alioli de ajo asado.",
+      "Papas rústicas al horno con salsa brava ahumada y alioli.",
     tags: ["Vegetariano", "Picante suave", "AR disponible"],
     image: "assets/images/papas-bravas.jpg",
     model: papasBravasModel,
   },
 
-  // PLATOS FUERTES
   {
     id: "hamburguesa-obsidiana",
     category: "platos-fuertes",
     name: "Hamburguesa de la Casa",
     price: "$32.900 COP",
     description:
-      "Carne 150 g a la parrilla, queso cheddar, vegetales frescos y salsa verde de la casa en pan brioche.",
+      "Carne 150 g, queso cheddar, vegetales frescos y salsa verde.",
     tags: ["Carne", "Signature", "AR disponible"],
     image: "assets/images/hamburguesa.jpg",
     model: defaultModel,
@@ -194,7 +212,7 @@ const dishes = [
     name: "Perro Caliente Gourmet",
     price: "$26.900 COP",
     description:
-      "Salchicha artesanal, cebolla caramelizada, salsa de la casa y crumble de tocineta en pan tostado.",
+      "Salchicha artesanal, cebolla caramelizada y crumble de tocineta.",
     tags: ["Street style", "Recomendado", "AR disponible"],
     image: "assets/images/perro-caliente.jpg",
     model: hotdogModel,
@@ -205,20 +223,19 @@ const dishes = [
     name: "Pizza Artesanal de la Casa",
     price: "$29.900 COP",
     description:
-      "Pizza de masa esponjosa horneada en casa, con mezcla de quesos, embutidos y toques de jalapeño para un picante suave.",
+      "Masa esponjosa, mezcla de quesos y embutidos.",
     tags: ["Para compartir", "Confort", "AR disponible"],
     image: "assets/images/pizza.jpg",
     model: pizzaModel,
   },
 
-  // POSTRES
   {
     id: "cupcake-chocolate",
     category: "postres",
     name: "Cupcake de Chocolate",
     price: "$16.900 COP",
     description:
-      "Cupcake de chocolate húmedo con frosting cremoso de cacao y topping de malvaviscos y salsa de chocolate.",
+      "Cupcake húmedo con frosting de cacao.",
     tags: ["Chocolate", "Dulce", "AR disponible"],
     image: "assets/images/cupcake.jpg",
     model: cupcakeModel,
@@ -226,10 +243,10 @@ const dishes = [
   {
     id: "cheesecake-clasico",
     category: "postres",
-    name: "Cheesecake Clásico Horneado",
+    name: "Cheesecake Clásico",
     price: "$18.500 COP",
     description:
-      "Rebanada de cheesecake horneado con base de galleta mantequillosa y textura cremosa, con acabado dorado en la superficie.",
+      "Cheesecake horneado con base de galleta.",
     tags: ["Suave", "Cremoso", "AR disponible"],
     image: "assets/images/cheesecake.jpg",
     model: cheesecakeModel,
@@ -240,7 +257,7 @@ const dishes = [
     name: "Roll de Fresa y Crema",
     price: "$17.900 COP",
     description:
-      "Bizcocho esponjoso enrollado, relleno de crema suave y trozos de fresa, perfecto para compartir o acompañar el café.",
+      "Bizcocho relleno de crema y fresa.",
     tags: ["Frutal", "Suave", "AR disponible"],
     image: "assets/images/roll-fresa.jpg",
     model: rollModel,
@@ -248,7 +265,7 @@ const dishes = [
 ];
 
 /* =========================
-   DOM + ESTADO
+   DOM
    ========================= */
 
 const menuContainer = document.getElementById("menu");
@@ -257,12 +274,11 @@ const tabsContainer = document.getElementById("menu-tabs");
 let activeCategory = "entradas";
 
 /* =========================
-   Render Tabs
+   Render tabs
    ========================= */
 
 function renderTabs() {
   tabsContainer.innerHTML = "";
-
   categories.forEach((cat) => {
     const button = document.createElement("button");
     button.className =
@@ -274,57 +290,50 @@ function renderTabs() {
 }
 
 /* =========================
-   Render Menu
+   Render menu
    ========================= */
 
 function renderMenu() {
   menuContainer.innerHTML = "";
 
-  const filteredDishes = dishes.filter(
-    (dish) => dish.category === activeCategory
-  );
+  dishes
+    .filter((dish) => dish.category === activeCategory)
+    .forEach((dish, index) => {
+      const card = document.createElement("article");
+      card.className = "dish-card";
+      card.style.animationDelay = `${index * 70}ms`;
 
-  filteredDishes.forEach((dish, index) => {
-    const card = document.createElement("article");
-    card.className = "dish-card";
-    card.dataset.dishId = dish.id;
-
-    // delay escalonado para la animación
-    card.style.animationDelay = `${index * 70}ms`;
-
-    card.innerHTML = `
-      <div class="dish-image-wrapper">
-        <img src="${dish.image}" alt="${dish.name}" class="dish-image" />
-      </div>
-
-      <div class="dish-content">
-        <div class="dish-header-line">
-          <h2 class="dish-name">${dish.name}</h2>
-          <span class="dish-price">${dish.price}</span>
+      card.innerHTML = `
+        <div class="dish-image-wrapper">
+          <img src="${dish.image}" alt="${dish.name}" class="dish-image" />
         </div>
 
-        <p class="dish-description">${dish.description}</p>
+        <div class="dish-content">
+          <div class="dish-header-line">
+            <h2 class="dish-name">${dish.name}</h2>
+            <span class="dish-price">${dish.price}</span>
+          </div>
 
-        <div class="dish-meta">
-          ${dish.tags
-            .map((tag) => `<span class="dish-tag">${tag}</span>`)
-            .join("")}
+          <p class="dish-description">${dish.description}</p>
+
+          <div class="dish-meta">
+            ${dish.tags.map((t) => `<span class="dish-tag">${t}</span>`).join("")}
+          </div>
+
+          <div class="dish-actions">
+            <button class="ar-button" data-dish-id="${dish.id}">
+              <span class="ar-button-icon">📱</span>
+              <span>
+                Ver en realidad aumentada
+                <span class="ar-button-sub">Visualízalo sobre tu mesa</span>
+              </span>
+            </button>
+          </div>
         </div>
+      `;
 
-        <div class="dish-actions">
-          <button class="ar-button" data-dish-id="${dish.id}">
-            <span class="ar-button-icon">📱</span>
-            <span>
-              Ver en realidad aumentada
-              <span class="ar-button-sub">Visualízalo sobre tu mesa</span>
-            </span>
-          </button>
-        </div>
-      </div>
-    `;
-
-    menuContainer.appendChild(card);
-  });
+      menuContainer.appendChild(card);
+    });
 }
 
 /* =========================
@@ -350,7 +359,7 @@ function createArOverlayIfNeeded() {
             Usa el botón de AR del visor para colocarlo en tu entorno.
           </div>
         </div>
-        <button class="ar-modal-close" aria-label="Cerrar">&times;</button>
+        <button class="ar-modal-close">&times;</button>
       </div>
 
       <model-viewer
@@ -359,9 +368,7 @@ function createArOverlayIfNeeded() {
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
         auto-rotate
-        environment-image="neutral"
-        exposure="1.0"
-      >
+        exposure="1.0">
       </model-viewer>
     </div>
   `;
@@ -372,19 +379,16 @@ function createArOverlayIfNeeded() {
   arTitleEl = arOverlayEl.querySelector(".ar-modal-title");
   arSubtitleEl = arOverlayEl.querySelector(".ar-modal-subtitle");
 
-  const closeBtn = arOverlayEl.querySelector(".ar-modal-close");
-  closeBtn.addEventListener("click", closeArOverlay);
+  arOverlayEl
+    .querySelector(".ar-modal-close")
+    .addEventListener("click", closeArOverlay);
 
-  arOverlayEl.addEventListener("click", (evt) => {
-    if (evt.target === arOverlayEl) {
-      closeArOverlay();
-    }
+  arOverlayEl.addEventListener("click", (e) => {
+    if (e.target === arOverlayEl) closeArOverlay();
   });
 }
 
 function openArOverlay(dish) {
-  if (!dish.model) return;
-
   createArOverlayIfNeeded();
 
   arModelViewer.setAttribute("src", dish.model.glb);
@@ -392,47 +396,41 @@ function openArOverlay(dish) {
 
   arTitleEl.textContent = dish.name;
   arSubtitleEl.textContent =
-    "Pulsa en el botón de AR del visor para colocar el plato sobre tu mesa.";
+    "Pulsa en el botón de AR del visor para colocarlo sobre tu mesa.";
 
   arOverlayEl.classList.add("open");
 }
 
 function closeArOverlay() {
-  if (!arOverlayEl) return;
   arOverlayEl.classList.remove("open");
   arModelViewer.removeAttribute("src");
   arModelViewer.removeAttribute("ios-src");
 }
 
 /* =========================
-   Eventos globales
+   Eventos
    ========================= */
 
-// Cambio de categoría (tabs) + Click botón AR
-document.addEventListener("click", (event) => {
-  const tab = event.target.closest(".menu-tab");
+document.addEventListener("click", (e) => {
+  const tab = e.target.closest(".menu-tab");
   if (tab) {
-    const newCategory = tab.dataset.categoryId;
-    if (newCategory && newCategory !== activeCategory) {
-      activeCategory = newCategory;
-      renderTabs();
-      renderMenu();
-    }
+    activeCategory = tab.dataset.categoryId;
+    renderTabs();
+    renderMenu();
     return;
   }
 
-  const button = event.target.closest(".ar-button");
-  if (!button) return;
+  const btn = e.target.closest(".ar-button");
+  if (!btn) return;
 
-  const dishId = button.dataset.dishId;
-  const dish = dishes.find((d) => d.id === dishId);
+  const dish = dishes.find((d) => d.id === btn.dataset.dishId);
   if (!dish) return;
 
   openArOverlay(dish);
 });
 
 /* =========================
-   Inicializar
+   Init
    ========================= */
 
 function initApp() {
