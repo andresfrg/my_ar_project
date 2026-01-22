@@ -21,14 +21,12 @@ function isIOS() {
 function tryOpenExternalBrowser(url) {
   const ua = navigator.userAgent || "";
 
-  // iOS: intentar Chrome si está instalado
   if (isIOS()) {
     const chromeUrl = url.replace(/^https?:\/\//, "googlechrome://");
     window.location.href = chromeUrl;
     return;
   }
 
-  // Android: intentar intent a Chrome
   if (/Android/i.test(ua)) {
     try {
       const u = new URL(url);
@@ -41,7 +39,6 @@ function tryOpenExternalBrowser(url) {
     } catch {}
   }
 
-  // Desktop u otros
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
@@ -68,7 +65,7 @@ function showOpenInBrowserGate() {
 
         <div class="browser-gate-actions">
           <button class="browser-gate-primary" id="openExternalBtn" type="button">
-            Abrir en navegador (intentar)
+            Abrir en navegador
           </button>
 
           <button class="browser-gate-secondary" id="copyGateLink" type="button">
@@ -77,7 +74,7 @@ function showOpenInBrowserGate() {
         </div>
 
         <div class="browser-gate-hint">
-          <strong>Si el botón no funciona:</strong><br/>
+          <strong>Si no abre:</strong><br/>
           Toca el menú <strong>⋯</strong> (arriba) y elige
           <em>Abrir en navegador</em> o <em>Abrir en Safari</em>.
         </div>
@@ -323,10 +320,7 @@ function renderMenu() {
           <div class="dish-actions">
             <button class="ar-button" data-dish-id="${dish.id}">
               <span class="ar-button-icon">📱</span>
-              <span>
-                Ver en realidad aumentada
-                <span class="ar-button-sub">Visualízalo sobre tu mesa</span>
-              </span>
+              <span>Ver en realidad aumentada</span>
             </button>
           </div>
         </div>
