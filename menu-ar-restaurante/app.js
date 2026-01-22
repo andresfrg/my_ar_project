@@ -1,3 +1,79 @@
+/* =========================
+   In-App Browser Gate (IG/FB/TikTok) - con estilos del theme
+   ========================= */
+
+function isInAppBrowser() {
+  const ua = navigator.userAgent || "";
+  if (ua.includes("Instagram")) return true;
+  if (ua.includes("FBAN") || ua.includes("FBAV") || ua.includes("FB_IAB")) return true;
+  if (ua.includes("TikTok")) return true;
+  return false;
+}
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function showOpenInBrowserGate() {
+  const url = window.location.href;
+  const browserName = isIOS() ? "Safari" : "Chrome";
+
+  document.body.innerHTML = `
+    <div class="browser-gate">
+      <div class="browser-gate-card">
+        <div class="browser-gate-pill">Inno-Menu · AR</div>
+
+        <h2 class="browser-gate-title">
+          Para ver Realidad Aumentada, ábrelo en ${browserName}
+        </h2>
+
+        <p class="browser-gate-text">
+          Instagram/Facebook suelen abrir enlaces dentro de la app y eso puede bloquear el visor 3D/AR.
+          Abre este link en <strong>${browserName}</strong> para que funcione correctamente.
+        </p>
+
+        <div class="browser-gate-actions">
+          <a class="browser-gate-primary" href="${url}" target="_blank" rel="noopener noreferrer">
+            Abrir en ${browserName}
+          </a>
+
+          <button class="browser-gate-secondary" id="copyGateLink">
+            Copiar link
+          </button>
+        </div>
+
+        <div class="browser-gate-hint">
+          <strong>Si no abre:</strong><br/>
+          ${
+            isIOS()
+              ? "Toca el menú ⋯ (arriba) → <em>Abrir en Safari</em>."
+              : "Toca el menú ⋯ (arriba) → <em>Abrir en navegador</em> o <em>Abrir en Chrome</em>."
+          }
+          <br/><br/>
+          Tip: En iPhone el AR funciona mejor desde Safari (USDZ / Quick Look).
+        </div>
+      </div>
+    </div>
+  `;
+
+  const btn = document.getElementById("copyGateLink");
+  if (btn) {
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        btn.textContent = "¡Listo! Link copiado";
+      } catch {
+        btn.textContent = "Copia manualmente la URL";
+      }
+      setTimeout(() => (btn.textContent = "Copiar link"), 1600);
+    });
+  }
+}
+
+/* =========================
+   MODELOS AR
+   ========================= */
+
 // Modelo AR por defecto (hamburguesa)
 const defaultModel = {
   glb: "assets/models/hamburguesa.glb",
@@ -52,6 +128,10 @@ const sushiModel = {
   usdz: "assets/models/sushi.usdz",
 };
 
+/* =========================
+   DATA MENÚ
+   ========================= */
+
 // Definición de categorías del menú
 const categories = [
   { id: "entradas", label: "Entradas" },
@@ -82,7 +162,7 @@ const dishes = [
       "Selección de nigiris sobre tabla de madera, con cortes frescos de pescado y mariscos para disfrutar en cada bocado.",
     tags: ["Fresco", "Mar", "AR disponible"],
     image: "assets/images/sushi.jpg",
-    model: sushiModel, // modelo AR del sushi
+    model: sushiModel,
   },
   {
     id: "papas-bravas",
@@ -93,7 +173,7 @@ const dishes = [
       "Papas rústicas al horno con salsa brava ahumada y alioli de ajo asado.",
     tags: ["Vegetariano", "Picante suave", "AR disponible"],
     image: "assets/images/papas-bravas.jpg",
-    model: papasBravasModel, // modelo AR de papas bravas
+    model: papasBravasModel,
   },
 
   // PLATOS FUERTES
@@ -106,7 +186,7 @@ const dishes = [
       "Carne 150 g a la parrilla, queso cheddar, vegetales frescos y salsa verde de la casa en pan brioche.",
     tags: ["Carne", "Signature", "AR disponible"],
     image: "assets/images/hamburguesa.jpg",
-    model: defaultModel, // modelo AR de la hamburguesa
+    model: defaultModel,
   },
   {
     id: "perro-gourmet",
@@ -117,7 +197,7 @@ const dishes = [
       "Salchicha artesanal, cebolla caramelizada, salsa de la casa y crumble de tocineta en pan tostado.",
     tags: ["Street style", "Recomendado", "AR disponible"],
     image: "assets/images/perro-caliente.jpg",
-    model: hotdogModel, // modelo del perro-caliente
+    model: hotdogModel,
   },
   {
     id: "pizza-artesanal",
@@ -128,7 +208,7 @@ const dishes = [
       "Pizza de masa esponjosa horneada en casa, con mezcla de quesos, embutidos y toques de jalapeño para un picante suave.",
     tags: ["Para compartir", "Confort", "AR disponible"],
     image: "assets/images/pizza.jpg",
-    model: pizzaModel, // modelo de la pizza
+    model: pizzaModel,
   },
 
   // POSTRES
@@ -141,7 +221,7 @@ const dishes = [
       "Cupcake de chocolate húmedo con frosting cremoso de cacao y topping de malvaviscos y salsa de chocolate.",
     tags: ["Chocolate", "Dulce", "AR disponible"],
     image: "assets/images/cupcake.jpg",
-    model: cupcakeModel, // modelo AR del cupcake
+    model: cupcakeModel,
   },
   {
     id: "cheesecake-clasico",
@@ -152,7 +232,7 @@ const dishes = [
       "Rebanada de cheesecake horneado con base de galleta mantequillosa y textura cremosa, con acabado dorado en la superficie.",
     tags: ["Suave", "Cremoso", "AR disponible"],
     image: "assets/images/cheesecake.jpg",
-    model: cheesecakeModel, // modelo del cheesecake clásico
+    model: cheesecakeModel,
   },
   {
     id: "roll-fresa-crema",
@@ -163,16 +243,22 @@ const dishes = [
       "Bizcocho esponjoso enrollado, relleno de crema suave y trozos de fresa, perfecto para compartir o acompañar el café.",
     tags: ["Frutal", "Suave", "AR disponible"],
     image: "assets/images/roll-fresa.jpg",
-    model: rollModel, // modelo del roll de fresa y crema
+    model: rollModel,
   },
 ];
+
+/* =========================
+   DOM + ESTADO
+   ========================= */
 
 const menuContainer = document.getElementById("menu");
 const tabsContainer = document.getElementById("menu-tabs");
 
 let activeCategory = "entradas";
 
-/* Render de tabs */
+/* =========================
+   Render Tabs
+   ========================= */
 
 function renderTabs() {
   tabsContainer.innerHTML = "";
@@ -187,7 +273,9 @@ function renderTabs() {
   });
 }
 
-/* Render de platos */
+/* =========================
+   Render Menu
+   ========================= */
 
 function renderMenu() {
   menuContainer.innerHTML = "";
@@ -224,10 +312,7 @@ function renderMenu() {
         </div>
 
         <div class="dish-actions">
-          <button
-            class="ar-button"
-            data-dish-id="${dish.id}"
-          >
+          <button class="ar-button" data-dish-id="${dish.id}">
             <span class="ar-button-icon">📱</span>
             <span>
               Ver en realidad aumentada
@@ -242,7 +327,9 @@ function renderMenu() {
   });
 }
 
-/* Modal AR */
+/* =========================
+   Modal AR
+   ========================= */
 
 let arOverlayEl;
 let arModelViewer;
@@ -317,9 +404,11 @@ function closeArOverlay() {
   arModelViewer.removeAttribute("ios-src");
 }
 
-/* Eventos globales */
+/* =========================
+   Eventos globales
+   ========================= */
 
-// Cambio de categoría (tabs)
+// Cambio de categoría (tabs) + Click botón AR
 document.addEventListener("click", (event) => {
   const tab = event.target.closest(".menu-tab");
   if (tab) {
@@ -332,7 +421,6 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  // Click en botón AR
   const button = event.target.closest(".ar-button");
   if (!button) return;
 
@@ -343,6 +431,17 @@ document.addEventListener("click", (event) => {
   openArOverlay(dish);
 });
 
-// Inicializar
-renderTabs();
-renderMenu();
+/* =========================
+   Inicializar
+   ========================= */
+
+function initApp() {
+  renderTabs();
+  renderMenu();
+}
+
+if (isInAppBrowser()) {
+  showOpenInBrowserGate();
+} else {
+  initApp();
+}
