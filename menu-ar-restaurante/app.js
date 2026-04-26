@@ -371,7 +371,7 @@ function createArOverlayIfNeeded() {
         </model-viewer>
 
         <button class="ar-float-btn" id="arFloatBtn" type="button">
-          📱 AR
+          🍽️ Llevalo a tu mesa
         </button>
       </div>
     </div>
